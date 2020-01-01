@@ -1,21 +1,19 @@
 import React from "react"
 import TextField from "@material-ui/core/TextField"
 import { withStyles } from '@material-ui/core/styles';
+import { Autocomplete } from '@material-ui/lab';
 
 const styles = {
   inputWrapper: {
-    display: "flex", 
-    flexDirection: "column", 
+    display: "flex",
+    flexDirection: "column",
     padding: 20
   }
 }
 
-function MaterialDetails({ classes }) {
+function MaterialDetails({ classes, title, setTitle, description, setDescription, levels, levelValue, setLevelValue }) {
 
-  const [title, setTitle] = React.useState("")
-  const [description, setDescription] = React.useState("")
-
-  const changeTitle = e => {    
+  const changeTitle = e => {
     setTitle(e.target.value)
   }
 
@@ -24,19 +22,19 @@ function MaterialDetails({ classes }) {
   }
 
   const inputs = [
-    { 
-      type: "text", 
-      label: "Title", 
-      multi: true, 
-      value: title, 
-      onChange: changeTitle 
+    {
+      type: "text",
+      label: "Title",
+      multi: true,
+      value: title,
+      onChange: changeTitle
     },
-    { 
-      type: "text", 
-      label: "Description", 
-      multi: true, 
-      value: description, 
-      onChange: changeDescription 
+    {
+      type: "text",
+      label: "Description",
+      multi: true,
+      value: description,
+      onChange: changeDescription
     },
   ]
 
@@ -51,8 +49,22 @@ function MaterialDetails({ classes }) {
           />
         )
       })}
+
+      <Autocomplete
+        id="combo-box-demo"
+        multiple
+        value={levelValue}
+        onChange={setLevelValue}
+        options={levels}
+        freeSolo={true}
+        getOptionLabel={option => option.title}
+        style={{ width: 300 }}
+        renderInput={params => (
+          <TextField {...params} label="Combo box" variant="outlined" fullWidth />
+        )}
+      />
     </div>
   )
 }
 
-export default  withStyles(styles)(MaterialDetails);
+export default withStyles(styles)(MaterialDetails);

@@ -1,13 +1,12 @@
 import React from "react"
 import Layout from "../components/layout"
-import Stepper from "../components/stepper"
+import MaterialStepper from "../components/MaterialStepper"
 
 export default ({ classes }) => {
 
   return (
     <Layout>      
-      <Stepper type="Add">
-      </Stepper>
+      <MaterialStepper type="Add" />      
     </Layout>
   )
 }
