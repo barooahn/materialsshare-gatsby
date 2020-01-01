@@ -6,6 +6,7 @@ import StepLabel from "@material-ui/core/StepLabel"
 import Button from "@material-ui/core/Button"
 import Typography from "@material-ui/core/Typography"
 import MediaFiles from "./media-files"
+import MaterialDetails from "./MaterialDetails"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -29,7 +30,7 @@ function getStepContent(step) {
     case 0:
       return <MediaFiles />
     case 1:
-      return "Add details"
+      return <MaterialDetails />
     case 2:
       return "Complete material"
     default:
@@ -37,7 +38,7 @@ function getStepContent(step) {
   }
 }
 
-export default function HorizontalLinearStepper() {
+export default function HorizontalLinearStepper({ type = "Add" }) {
   const classes = useStyles()
   const [activeStep, setActiveStep] = React.useState(0)
   const [skipped, setSkipped] = React.useState(new Set())
@@ -87,6 +88,7 @@ export default function HorizontalLinearStepper() {
 
   return (
     <div className={classes.root}>
+      <h1>{type} Material</h1>
       <Stepper activeStep={activeStep}>
         {steps.map((label, index) => {
           const stepProps = {}
