@@ -4,6 +4,8 @@ import { withStyles } from "@material-ui/core/styles"
 import { Autocomplete } from "@material-ui/lab"
 import Typography from "@material-ui/core/Typography"
 import Slider from "@material-ui/core/Slider"
+import FormControlLabel from "@material-ui/core/FormControlLabel"
+import Switch from "@material-ui/core/Switch"
 
 const styles = {
   inputWrapper: {
@@ -31,6 +33,8 @@ function MaterialDetails({
   setTimePrep,
   timeClass,
   setTimeClass,
+  share,
+  setShare,
 }) {
   const changeTitle = e => {
     setTitle(e.target.value)
@@ -91,10 +95,11 @@ function MaterialDetails({
 
   return (
     <div className={classes.inputWrapper}>
-      {inputs.map(input => {
+      {inputs.map((input, index) => {
         if (input.type === "text") {
           return (
             <TextField
+              key={index}
               label={input.label}
               value={input.value}
               onChange={input.onChange}
@@ -103,9 +108,10 @@ function MaterialDetails({
         } else if (input.type === "slider") {
           console.log(`value of ${input.label}: ${input.value}`)
           return (
-            <div>
+            <div key={index}>
               <Typography gutterBottom>{input.label}</Typography>
               <Slider
+                key={index}
                 getAriaLabel={index =>
                   index === 0 ? "Minimum Minutes" : "Maximum Minutes"
                 }
@@ -121,13 +127,13 @@ function MaterialDetails({
       })}
 
       <Autocomplete
-        id="combo-box-demo"
+        id="combo-box-demo1"
         multiple
         value={pupilTaskValue}
         onChange={setPupilTaskValue}
         options={pupilTasks}
         freeSolo={true}
-        getOptionLabel={option => option.title}
+        getOptionLabel={option => option.label}
         style={{ width: 300 }}
         renderInput={params => (
           <TextField
@@ -139,13 +145,13 @@ function MaterialDetails({
         )}
       />
       <Autocomplete
-        id="combo-box-demo"
+        id="combo-box-demo2"
         multiple
         value={levelValue}
         onChange={setLevelValue}
         options={levels}
         freeSolo={true}
-        getOptionLabel={option => option.title}
+        getOptionLabel={option => option.label}
         style={{ width: 300 }}
         renderInput={params => (
           <TextField
@@ -155,6 +161,17 @@ function MaterialDetails({
             fullWidth
           />
         )}
+      />
+      <FormControlLabel
+        control={
+          <Switch
+            checked={true}
+            onChange={setShare}
+            value={share}
+            color="primary"
+          />
+        }
+        label="Share your resource"
       />
     </div>
   )

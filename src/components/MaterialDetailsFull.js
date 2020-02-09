@@ -8,7 +8,10 @@ const styles = {
   inputWrapper: {
     display: "flex",
     flexDirection: "column",
-    padding: 20,
+    paddingTop: 40,
+  },
+  autoComplete: {
+    paddingTop: 30,
   },
 }
 
@@ -161,6 +164,7 @@ function MaterialDetailsFull({
       })}
 
       <Autocomplete
+        className={classes.autoComplete}
         id="combo-box-demo"
         multiple
         value={instituteValue}
@@ -168,7 +172,6 @@ function MaterialDetailsFull({
         options={institute}
         freeSolo={true}
         getOptionLabel={option => option.title}
-        style={{ width: 300 }}
         renderInput={params => (
           <TextField
             {...params}
@@ -179,6 +182,7 @@ function MaterialDetailsFull({
         )}
       />
       <Autocomplete
+        className={classes.autoComplete}
         id="combo-box-demo"
         multiple
         value={languageFocusValue}
@@ -186,7 +190,6 @@ function MaterialDetailsFull({
         options={languageFocus}
         freeSolo={true}
         getOptionLabel={option => option.title}
-        style={{ width: 300 }}
         renderInput={params => (
           <TextField
             {...params}
@@ -197,6 +200,7 @@ function MaterialDetailsFull({
         )}
       />
       <Autocomplete
+        className={classes.autoComplete}
         id="combo-box-demo"
         multiple
         value={activityUseValue}
@@ -204,7 +208,6 @@ function MaterialDetailsFull({
         options={activityUse}
         freeSolo={true}
         getOptionLabel={option => option.title}
-        style={{ width: 300 }}
         renderInput={params => (
           <TextField
             {...params}

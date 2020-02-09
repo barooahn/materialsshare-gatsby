@@ -1,4 +1,5 @@
 import React from "react"
+import { useStaticQuery, graphql } from "gatsby"
 import { makeStyles } from "@material-ui/core/styles"
 import Stepper from "@material-ui/core/Stepper"
 import Step from "@material-ui/core/Step"
@@ -27,20 +28,6 @@ function getSteps() {
   return ["Add Media and Title", "Add details", "Complete material"]
 }
 
-const levels = [
-  { title: "The Shawshank Redemption", year: 1994 },
-  { title: "The Godfather", year: 1972 },
-  { title: "The Godfather: Part II", year: 1974 },
-  { title: "The Dark Knight", year: 2008 },
-]
-
-const pupilTasks = [
-  { title: "The Shawshank Redemption task", year: 1994 },
-  { title: "The Godfather task", year: 1972 },
-  { title: "The Godfather: Part II task", year: 1974 },
-  { title: "The Dark Knight task", year: 2008 },
-]
-
 const institute = [
   { title: "The Shawshank Redemption institute", year: 1994 },
   { title: "The Godfather institute", year: 1972 },
@@ -60,7 +47,72 @@ const activityUse = [
   { title: "The Dark Knight activityUse", year: 2008 },
 ]
 
-export default function MaterialStepper({ type = "Add" }) {
+const MaterialStepper = ({ type = "Add" }) => {
+  const query = useStaticQuery(graphql`
+    {
+      allMongodbMaterialsshareMaterials {
+        edges {
+          node {
+            level {
+              value
+              label
+            }
+            pupilTask {
+              label
+              value
+            }
+          }
+        }
+      }
+    }
+  `)
+
+  function compareValues(key, order = "asc") {
+    return function innerSort(a, b) {
+      if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
+        // property doesn't exist on either object
+        return 0
+      }
+
+      const varA = typeof a[key] === "string" ? a[key].toUpperCase() : a[key]
+      const varB = typeof b[key] === "string" ? b[key].toUpperCase() : b[key]
+
+      let comparison = 0
+      if (varA > varB) {
+        comparison = 1
+      } else if (varA < varB) {
+        comparison = -1
+      }
+      return order === "desc" ? comparison * -1 : comparison
+    }
+  }
+
+  const IsInObject = (value, resultArray) => {
+    for (let i = 0; i < resultArray.length; i++) {
+      if (resultArray[i]["value"] === value) {
+        return true
+      }
+    }
+    return false
+  }
+
+  const getDynamicOptions = nameOfDBColumn => {
+    let resultArray = []
+    query.allMongodbMaterialsshareMaterials.edges.map(node => {
+      node.node[nameOfDBColumn].map(item => {
+        if (!IsInObject(item.value, resultArray))
+          resultArray.push({
+            label: item.label,
+            value: item.value,
+          })
+      })
+    })
+    return resultArray.sort(compareValues("label"))
+  }
+
+  let dynamicLevels = getDynamicOptions("level")
+  let dynamicPupilTask = getDynamicOptions("pupilTask")
+
   const classes = useStyles()
   const [activeStep, setActiveStep] = React.useState(0)
   const [skipped, setSkipped] = React.useState(new Set())
@@ -84,9 +136,10 @@ export default function MaterialStepper({ type = "Add" }) {
       materials,
       tips,
       notes,
-      institute,
-      languageFocus,
-      activityUse,
+      instituteValue,
+      languageFocusValue,
+      activityUseValue,
+      share,
     })
   }
 
@@ -110,13 +163,14 @@ export default function MaterialStepper({ type = "Add" }) {
   const [instituteValue, setInstituteValue] = React.useState([])
   const [activityUseValue, setActivityUseValue] = React.useState([])
   const [languageFocusValue, setLanguageFocusValue] = React.useState([])
+  const [share, setShare] = React.useState(true)
 
   const changeLevel = (e, value) => {
     console.log("change level", value)
     //Check if value passed is object with title i.e. from db or a new item
-    if (value && !value[value.length - 1].hasOwnProperty("title")) {
+    if (value && !value[value.length - 1].hasOwnProperty("label")) {
       const lastValue = value.pop(value[value.length])
-      const lastValueItem = { title: lastValue, year: 2011 }
+      const lastValueItem = { label: lastValue, year: 2011 }
       value.push(lastValueItem)
     }
     setLevelValue(value)
@@ -125,9 +179,9 @@ export default function MaterialStepper({ type = "Add" }) {
   const changePupilTask = (e, value) => {
     console.log("change pupil level", value)
     //Check if value passed is object with title i.e. from db or a new item
-    if (value && !value[value.length - 1].hasOwnProperty("title")) {
+    if (value && !value[value.length - 1].hasOwnProperty("label")) {
       const lastValue = value.pop(value[value.length])
-      const lastValueItem = { title: lastValue, year: 2011 }
+      const lastValueItem = { label: lastValue, year: 2011 }
       value.push(lastValueItem)
     }
     setPupilTaskValue(value)
@@ -145,7 +199,7 @@ export default function MaterialStepper({ type = "Add" }) {
   }
 
   const changeLanguageFocus = (e, value) => {
-    console.log("change Institute", value)
+    console.log("change Language focus", value)
     //Check if value passed is object with title i.e. from db or a new item
     if (value && !value[value.length - 1].hasOwnProperty("title")) {
       const lastValue = value.pop(value[value.length])
@@ -156,7 +210,7 @@ export default function MaterialStepper({ type = "Add" }) {
   }
 
   const changeActivityUse = (e, value) => {
-    console.log("change Institute", value)
+    console.log("change Activity use", value)
     //Check if value passed is object with title i.e. from db or a new item
     if (value && !value[value.length - 1].hasOwnProperty("title")) {
       const lastValue = value.pop(value[value.length])
@@ -179,16 +233,18 @@ export default function MaterialStepper({ type = "Add" }) {
             setDescription={setDescription}
             levelValue={levelValue}
             setLevelValue={changeLevel}
-            levels={levels}
+            levels={dynamicLevels}
             objective={objective}
             setObjective={setObjective}
             timePrep={timePrep}
             setTimePrep={setTimePrep}
             timeClass={timeClass}
             setTimeClass={setTimeClass}
-            pupilTasks={pupilTasks}
+            pupilTasks={dynamicPupilTask}
             pupilTaskValue={pupilTaskValue}
             setPupilTaskValue={changePupilTask}
+            share={share}
+            setShare={setShare}
           />
         )
       case 2:
@@ -215,11 +271,11 @@ export default function MaterialStepper({ type = "Add" }) {
             instituteValue={instituteValue}
             setInstituteValue={changeInstitute}
             languageFocus={languageFocus}
-            langFocusValue={languageFocusValue}
-            setLangFocusValue={changeLanguageFocus}
+            languageFocusValue={languageFocusValue}
+            setLanguageFocusValue={changeLanguageFocus}
             activityUse={activityUse}
             activityUseValue={activityUseValue}
-            setActivityUse={changeActivityUse}
+            setActivityUseValue={changeActivityUse}
           />
         )
       default:
@@ -278,7 +334,9 @@ export default function MaterialStepper({ type = "Add" }) {
           const labelProps = {}
           if (isStepOptional(index)) {
             labelProps.optional = (
-              <Typography variant="caption">Optional</Typography>
+              <Typography component={"span"} variant="caption">
+                Optional
+              </Typography>
             )
           }
           if (isStepSkipped(index)) {
@@ -294,7 +352,7 @@ export default function MaterialStepper({ type = "Add" }) {
       <div>
         {activeStep === steps.length ? (
           <div>
-            <Typography className={classes.instructions}>
+            <Typography component={"span"} className={classes.instructions}>
               All steps completed - you&apos;re finished
             </Typography>
             <Button onClick={handleReset} className={classes.button}>
@@ -303,7 +361,7 @@ export default function MaterialStepper({ type = "Add" }) {
           </div>
         ) : (
           <div>
-            <Typography className={classes.instructions}>
+            <Typography component={"span"} className={classes.instructions}>
               {getStepContent(activeStep)}
             </Typography>
             <div>
@@ -349,3 +407,5 @@ export default function MaterialStepper({ type = "Add" }) {
     </div>
   )
 }
+
+export default MaterialStepper
