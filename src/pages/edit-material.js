@@ -1,8 +1,9 @@
 import React from "react"
 import Layout from "../components/layout"
+import MaterialStepper from "../components/MaterialStepper"
 
-export default () => (
+export default props => (
   <Layout>
-      <h1>Edit Material</h1>
+    <MaterialStepper type="Edit" {...props.location.state} />
   </Layout>
 )
