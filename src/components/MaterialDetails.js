@@ -19,8 +19,6 @@ function MaterialDetails({
   classes,
   title,
   setTitle,
-  description,
-  setDescription,
   objective,
   setObjective,
   levels,
@@ -38,10 +36,6 @@ function MaterialDetails({
 }) {
   const changeTitle = e => {
     setTitle(e.target.value)
-  }
-
-  const changeDescription = e => {
-    setDescription(e.target.value)
   }
 
   const changeObjective = e => {
@@ -63,13 +57,6 @@ function MaterialDetails({
       multi: true,
       value: title,
       onChange: changeTitle,
-    },
-    {
-      type: "text",
-      label: "Description",
-      multi: true,
-      value: description,
-      onChange: changeDescription,
     },
     {
       type: "text",

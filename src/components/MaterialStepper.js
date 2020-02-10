@@ -47,7 +47,34 @@ const activityUse = [
   { title: "The Dark Knight activityUse", year: 2008 },
 ]
 
-const MaterialStepper = ({ type = "Add" }) => {
+const MaterialStepper = ({
+  type = "Add",
+  editTitle = "",
+  editLevelValue = [],
+  editObjective = "",
+  editPupilTask = [],
+}) => {
+  //detail values
+  const [title, setTitle] = React.useState(editTitle)
+  const [levelValue, setLevelValue] = React.useState(editLevelValue)
+  const [pupilTaskValue, setPupilTaskValue] = React.useState(editPupilTask)
+  const [objective, setObjective] = React.useState(editObjective)
+  const [timePrep, setTimePrep] = React.useState([20, 40])
+  const [timeClass, setTimeClass] = React.useState([20, 40])
+  const [procBefore, setProcBefore] = React.useState("")
+  const [procIn, setProcIn] = React.useState("")
+  const [book, setBook] = React.useState("")
+  const [page, setPage] = React.useState("")
+  const [followUp, setFollowUp] = React.useState("")
+  const [variations, setVariations] = React.useState("")
+  const [materials, setMaterials] = React.useState("")
+  const [tips, setTips] = React.useState("")
+  const [notes, setNotes] = React.useState("")
+  const [instituteValue, setInstituteValue] = React.useState([])
+  const [activityUseValue, setActivityUseValue] = React.useState([])
+  const [languageFocusValue, setLanguageFocusValue] = React.useState([])
+  const [share, setShare] = React.useState(true)
+
   const query = useStaticQuery(graphql`
     {
       allMongodbMaterialsshareMaterials {
@@ -121,7 +148,6 @@ const MaterialStepper = ({ type = "Add" }) => {
   const save = () => {
     saveData({
       title,
-      description,
       objective,
       levelValue,
       pupilTaskValue,
@@ -142,28 +168,6 @@ const MaterialStepper = ({ type = "Add" }) => {
       share,
     })
   }
-
-  //detail values
-  const [title, setTitle] = React.useState("")
-  const [description, setDescription] = React.useState("")
-  const [levelValue, setLevelValue] = React.useState([])
-  const [pupilTaskValue, setPupilTaskValue] = React.useState([])
-  const [objective, setObjective] = React.useState("")
-  const [timePrep, setTimePrep] = React.useState([20, 40])
-  const [timeClass, setTimeClass] = React.useState([20, 40])
-  const [procBefore, setProcBefore] = React.useState("")
-  const [procIn, setProcIn] = React.useState("")
-  const [book, setBook] = React.useState("")
-  const [page, setPage] = React.useState("")
-  const [followUp, setFollowUp] = React.useState("")
-  const [variations, setVariations] = React.useState("")
-  const [materials, setMaterials] = React.useState("")
-  const [tips, setTips] = React.useState("")
-  const [notes, setNotes] = React.useState("")
-  const [instituteValue, setInstituteValue] = React.useState([])
-  const [activityUseValue, setActivityUseValue] = React.useState([])
-  const [languageFocusValue, setLanguageFocusValue] = React.useState([])
-  const [share, setShare] = React.useState(true)
 
   const changeLevel = (e, value) => {
     console.log("change level", value)
@@ -229,8 +233,6 @@ const MaterialStepper = ({ type = "Add" }) => {
           <MaterialDetails
             title={title}
             setTitle={setTitle}
-            description={description}
-            setDescription={setDescription}
             levelValue={levelValue}
             setLevelValue={changeLevel}
             levels={dynamicLevels}
@@ -245,6 +247,7 @@ const MaterialStepper = ({ type = "Add" }) => {
             setPupilTaskValue={changePupilTask}
             share={share}
             setShare={setShare}
+            type={type}
           />
         )
       case 2:
@@ -276,6 +279,7 @@ const MaterialStepper = ({ type = "Add" }) => {
             activityUse={activityUse}
             activityUseValue={activityUseValue}
             setActivityUseValue={changeActivityUse}
+            type={type}
           />
         )
       default:
@@ -327,7 +331,7 @@ const MaterialStepper = ({ type = "Add" }) => {
 
   return (
     <div className={classes.root}>
-      <h1>{type} Material</h1>
+      <h1>{type} Material </h1>
       <Stepper activeStep={activeStep}>
         {steps.map((label, index) => {
           const stepProps = {}

@@ -6,11 +6,6 @@ import EditIcon from "@material-ui/icons/Edit"
 import { navigate } from "@reach/router"
 
 export default ({ data }) => {
-  const handleEditClick = () => {
-    console.log("here")
-    navigate(`material?id=5ddafd65becf7600178a720b`)
-  }
-
   return (
     <Layout style={{ color: `teal` }}>
       <h1>All Materials</h1>
@@ -21,11 +16,27 @@ export default ({ data }) => {
             <Link to={`/material/${material.node.title}`}>
               <h1>{material.node.title}</h1>
             </Link>
+            <p>Objective: {material.node.objective}</p>
 
-            <p>{material.node.mongodb_id}</p>
-            <Fab color="secondary" aria-label="edit" onClick={handleEditClick}>
-              <EditIcon />
-            </Fab>
+            {/* <p>{JSON.stringify(material.node.pupilTask)}</p> */}
+
+            {material.node.pupilTask.map(task => {
+              return <p>Pupil Task: {task.label}</p>
+            })}
+
+            <Link
+              to="../edit-material/"
+              state={{
+                editTitle: material.node.title,
+                editLevelValue: material.node.level,
+                editObjective: material.node.objective,
+                editPupilTask: material.node.pupilTask,
+              }}
+            >
+              <Fab color="secondary" aria-label="edit">
+                <EditIcon />
+              </Fab>
+            </Link>
           </div>
         )
       })}
