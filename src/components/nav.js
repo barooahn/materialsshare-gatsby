@@ -21,6 +21,10 @@ const useStyles = makeStyles({
   },
 })
 
+/**
+ * hello ! hi back
+ *
+ */
 export default function SwipeableTemporaryDrawer() {
   const classes = useStyles()
   const [state, setState] = React.useState({
@@ -47,26 +51,86 @@ export default function SwipeableTemporaryDrawer() {
       onKeyDown={toggleDrawer(side, false)}
     >
       <List>
-        {["Materials", "Add Material", "Help", "Contact", "About"].map(
-          (text, index) => (
-            <Link
-              key={index}
-              to="/all-materials/"
-              activeStyle={{
-                textDecoration: "none",
-                cursor: "pointer",
-                color: "inherit",
-              }}
-            >
-              <ListItem button key={text}>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            </Link>
-          )
-        )}
+        <Link
+          key={"Materials"}
+          to="/allMaterials/"
+          activeStyle={{
+            textDecoration: "none",
+            cursor: "pointer",
+            color: "inherit",
+          }}
+        >
+          <ListItem button key={"Materials button"}>
+            <ListItemIcon>
+              <InboxIcon />
+            </ListItemIcon>
+            <ListItemText primary={"Materials"} />
+          </ListItem>
+        </Link>
+        <Link
+          key={"Add Material"}
+          to="/addMaterial/"
+          activeStyle={{
+            textDecoration: "none",
+            cursor: "pointer",
+            color: "inherit",
+          }}
+        >
+          <ListItem button key={"Add Material"}>
+            <ListItemIcon>
+              <InboxIcon />
+            </ListItemIcon>
+            <ListItemText primary={"Add Material"} />
+          </ListItem>
+        </Link>
+        <Link
+          key={"Help"}
+          to="/help/"
+          activeStyle={{
+            textDecoration: "none",
+            cursor: "pointer",
+            color: "inherit",
+          }}
+        >
+          <ListItem button key={"Help button"}>
+            <ListItemIcon>
+              <InboxIcon />
+            </ListItemIcon>
+            <ListItemText primary={"Help"} />
+          </ListItem>
+        </Link>
+        <Link
+          key={"Contact"}
+          to="/contact/"
+          activeStyle={{
+            textDecoration: "none",
+            cursor: "pointer",
+            color: "inherit",
+          }}
+        >
+          <ListItem button key={"Contact button"}>
+            <ListItemIcon>
+              <InboxIcon />
+            </ListItemIcon>
+            <ListItemText primary={"Contact"} />
+          </ListItem>
+        </Link>
+        <Link
+          key={"About"}
+          to="/about/"
+          activeStyle={{
+            textDecoration: "none",
+            cursor: "pointer",
+            color: "inherit",
+          }}
+        >
+          <ListItem button key={"About button"}>
+            <ListItemIcon>
+              <InboxIcon />
+            </ListItemIcon>
+            <ListItemText primary={"About"} />
+          </ListItem>
+        </Link>
       </List>
       <Divider />
       <List>
