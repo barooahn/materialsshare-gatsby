@@ -47,18 +47,14 @@ const activityUse = [
   { title: "The Dark Knight activityUse", year: 2008 },
 ]
 
-const MaterialStepper = ({
-  type = "Add",
-  editTitle = "",
-  editLevelValue = [],
-  editObjective = "",
-  editPupilTask = [],
-}) => {
+const MaterialStepper = ({ type = "Add", material = {} }) => {
   //detail values
-  const [title, setTitle] = React.useState(editTitle)
-  const [levelValue, setLevelValue] = React.useState(editLevelValue)
-  const [pupilTaskValue, setPupilTaskValue] = React.useState(editPupilTask)
-  const [objective, setObjective] = React.useState(editObjective)
+  const [filePaths, setFilePaths] = React.useState(material.files || [])
+  const [localPaths, setLocalPaths] = React.useState([])
+  const [title, setTitle] = React.useState(material.title)
+  const [levelValue, setLevelValue] = React.useState(material.levelValue)
+  const [pupilTaskValue, setPupilTaskValue] = React.useState(material.pupilTask)
+  const [objective, setObjective] = React.useState(material.objective)
   const [timePrep, setTimePrep] = React.useState([20, 40])
   const [timeClass, setTimeClass] = React.useState([20, 40])
   const [procBefore, setProcBefore] = React.useState("")
@@ -88,6 +84,7 @@ const MaterialStepper = ({
               label
               value
             }
+            files
           }
         }
       }
@@ -125,8 +122,8 @@ const MaterialStepper = ({
 
   const getDynamicOptions = nameOfDBColumn => {
     let resultArray = []
-    query.allMongodbMaterialsshareMaterials.edges.map(node => {
-      node.node[nameOfDBColumn].map(item => {
+    query.allMongodbMaterialsshareMaterials.edges.forEach(node => {
+      node.node[nameOfDBColumn].forEach(item => {
         if (!IsInObject(item.value, resultArray))
           resultArray.push({
             label: item.label,
@@ -227,7 +224,15 @@ const MaterialStepper = ({
   function getStepContent(step) {
     switch (step) {
       case 0:
-        return <MediaFiles />
+        return (
+          <MediaFiles
+            filePaths={filePaths}
+            setFilePaths={setFilePaths}
+            localPaths={localPaths}
+            setLocalPaths={setLocalPaths}
+            type={type}
+          />
+        )
       case 1:
         return (
           <MaterialDetails

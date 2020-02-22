@@ -3,9 +3,9 @@ import Fab from "@material-ui/core/Fab"
 import { graphql, Link } from "gatsby"
 import Layout from "../components/layout"
 import EditIcon from "@material-ui/icons/Edit"
-import { navigate } from "@reach/router"
 
 export default ({ data }) => {
+  const path = "https://s3.eu-west-2.amazonaws.com/matshre-assets/"
   return (
     <Layout style={{ color: `teal` }}>
       <h1>All Materials</h1>
@@ -17,20 +17,17 @@ export default ({ data }) => {
               <h1>{material.node.title}</h1>
             </Link>
             <p>Objective: {material.node.objective}</p>
-
             {/* <p>{JSON.stringify(material.node.pupilTask)}</p> */}
-
             {material.node.pupilTask.map(task => {
               return <p>Pupil Task: {task.label}</p>
             })}
 
+            <img src={path + material.node.files} width="300px" />
+
             <Link
-              to="../edit-material/"
+              to="../editMaterial/"
               state={{
-                editTitle: material.node.title,
-                editLevelValue: material.node.level,
-                editObjective: material.node.objective,
-                editPupilTask: material.node.pupilTask,
+                material: material.node,
               }}
             >
               <Fab color="secondary" aria-label="edit">
@@ -49,8 +46,8 @@ export const query = graphql`
     allMongodbMaterialsshareMaterials {
       edges {
         node {
+          files
           category
-          dateModified
           level {
             label
             value

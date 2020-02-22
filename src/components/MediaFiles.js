@@ -20,22 +20,20 @@ const allowedMimeTypes = [
   "video/x-msvideo",
 ]
 
-export default () => {
+export default ({ setFilePaths, filePaths, setLocalPaths, localPaths }) => {
   const [selectedFiles, setSelectedFiles] = useState([])
   const [loaded, setLoaded] = useState(0)
   const [showUpload, setShowUpload] = useState(false)
-  const [filePaths, setFilePaths] = useState([])
-  const [showContinue, setShowContinue] = useState(false)
 
   const handleselectedFile = e => {
     let files = Array.from(e.target.files)
     // console.log("uploaded files are ", e.target.files);
     //validate mime type
     const reExtension = /(?:\.([^.]+))?$/
-    files.map(x => {
-      const ext = x.name.match(reExtension)[1].toLowerCase()
+    files.forEach(file => {
+      const ext = file.name.match(reExtension)[1].toLowerCase()
       if (ext === "docx") {
-        return x
+        return file
       } else {
         return files.filter(ext => allowedMimeTypes.includes(ext.type))
       }
@@ -47,14 +45,13 @@ export default () => {
 
   const handleDelete = file => {
     axios
-      .delete("/api/material/file/delete", {
+      .delete("http://localhost:5000/api/material/file/delete", {
         data: { file: file },
       })
       .then(res => {
         const removed = [...filePaths].filter(x => x !== res.data.deleted)
         setFilePaths(removed)
         console.log("filePaths after deleted", filePaths)
-        if (filePaths.length < 1) setShowContinue(false)
       })
       .catch(function(err) {
         console.log(err)
@@ -63,6 +60,7 @@ export default () => {
 
   const handleUpload = () => {
     const data = new FormData()
+    data.append("saveType", "localUpload")
     for (var i = 0; i < selectedFiles.length; i++) {
       let file = selectedFiles[i]
       Object.defineProperty(file, "name", {
@@ -72,17 +70,20 @@ export default () => {
       data.append("files[" + i + "]", file)
     }
     axios
-      .post("http://localhost:5000/api/material/file/upload", data, {
-        onUploadProgress: ProgressEvent => {
-          setLoaded((ProgressEvent.loaded / ProgressEvent.total) * 100)
-        },
-      })
+      .post(
+        "http://localhost:5000/api/material/file/upload?saveType=localUpload",
+        data,
+        {
+          onUploadProgress: ProgressEvent => {
+            setLoaded((ProgressEvent.loaded / ProgressEvent.total) * 100)
+          },
+        }
+      )
       .then(res => {
-        //console.log("it's an array", res.data);
-        const paths = res.data.map(data => data.name)
-
-        setFilePaths([...filePaths, ...paths])
-        setShowContinue(true)
+        const paths = res.data
+        console.log("paths", paths)
+        setLocalPaths([...localPaths, ...res.data])
+        console.log("filePaths", filePaths)
       })
       .catch(function(err) {
         console.log(err)
@@ -93,18 +94,22 @@ export default () => {
     return <li key={file.name}>{file.name}</li>
   })
 
-  const newFilePaths = filePaths.map(file => {
-    return (
-      <li key={file}>
-        <img
-          src={`https://s3.eu-west-2.amazonaws.com/matshre-assets/${file}`}
-        />
-        <DeleteForever onClick={() => handleDelete(file)} color="secondary">
-          delete_forever
-        </DeleteForever>
-      </li>
-    )
-  })
+  const displayImages = (mediaURL, paths) => {
+    return paths.map(image => {
+      console.log("mediaURL + image" + mediaURL, image)
+      return (
+        <li key={image}>
+          <img alt={image} src={mediaURL + image} width="300px" />
+          <DeleteForever
+            onClick={() => handleDelete(mediaURL + image)}
+            color="secondary"
+          >
+            delete_forever
+          </DeleteForever>
+        </li>
+      )
+    })
+  }
 
   return (
     <React.Fragment>
@@ -113,7 +118,6 @@ export default () => {
       </Typography>
       <br />
       <br />
-
       <input
         accept="image/*, audio/*, video/*, .pdf, .docx, application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         id="contained-button-file"
@@ -127,6 +131,12 @@ export default () => {
           Select File(s)
         </Button>
       </label>
+
+      {displayImages("http://localhost:5000/", localPaths)}
+      {displayImages(
+        "https://s3.eu-west-2.amazonaws.com/matshre-assets/",
+        filePaths
+      )}
 
       <br />
       <br />
@@ -155,13 +165,8 @@ export default () => {
 
           <FormHelperText>Uploaded files</FormHelperText>
 
-          <ul>{newFilePaths}</ul>
+          {/* {displayImages("http://localhost:5000/", localPaths)} */}
         </React.Fragment>
-      ) : null}
-      {showContinue ? (
-        <Button variant="contained" color="primary" className="contiune">
-          Continue
-        </Button>
       ) : null}
     </React.Fragment>
   )

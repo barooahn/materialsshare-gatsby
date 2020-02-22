@@ -12,8 +12,8 @@ module.exports = {
      * setup the site to pull data from the "documents" collection in a local
      * MongoDB instance
      */
-    `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,
+    `gatsby-transformer-sharp`,
     {
       resolve: `gatsby-source-mongodb`,
       options: {
