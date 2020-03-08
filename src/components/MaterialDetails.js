@@ -33,6 +33,8 @@ function MaterialDetails({
   setTimeClass,
   share,
   setShare,
+  targetLanguage,
+  setTargetLanguage,
 }) {
   const changeTitle = e => {
     setTitle(e.target.value)
@@ -49,6 +51,9 @@ function MaterialDetails({
   const changeTimeClass = (e, newValue) => {
     setTimeClass(newValue)
   }
+  const changeTargetLanguage = (e, newValue) => {
+    setTargetLanguage(newValue)
+  }
 
   const inputs = [
     {
@@ -64,6 +69,13 @@ function MaterialDetails({
       multi: true,
       value: objective,
       onChange: changeObjective,
+    },
+    {
+      type: "text",
+      label: "Target Language",
+      multi: true,
+      value: targetLanguage,
+      onChange: changeTargetLanguage,
     },
     {
       type: "slider",
@@ -121,11 +133,11 @@ function MaterialDetails({
         options={pupilTasks}
         freeSolo={true}
         getOptionLabel={option => option.label}
-        style={{ width: 300 }}
+        style={{ width: 600 }}
         renderInput={params => (
           <TextField
             {...params}
-            label="Combo box"
+            label="What type of work do the pupils do? - Pair, group individual etc."
             variant="outlined"
             fullWidth
           />
@@ -139,11 +151,11 @@ function MaterialDetails({
         options={levels}
         freeSolo={true}
         getOptionLabel={option => option.label}
-        style={{ width: 300 }}
+        style={{ width: 600 }}
         renderInput={params => (
           <TextField
             {...params}
-            label="Combo box"
+            label="What level is the materials based on? - Level 1, intermediate, first year etc."
             variant="outlined"
             fullWidth
           />

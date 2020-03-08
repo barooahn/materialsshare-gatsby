@@ -1,8 +1,7 @@
-import React, { useState } from "react"
+import React, { useEffect } from "react"
 import axios from "axios"
 import Button from "@material-ui/core/Button"
 import Typography from "@material-ui/core/Typography"
-import { LinearProgress, FormHelperText } from "@material-ui/core"
 import DeleteForever from "@material-ui/icons/DeleteForever"
 
 const allowedMimeTypes = [
@@ -20,27 +19,14 @@ const allowedMimeTypes = [
   "video/x-msvideo",
 ]
 
-export default ({ setFilePaths, filePaths, setLocalPaths, localPaths }) => {
-  const [selectedFiles, setSelectedFiles] = useState([])
-  const [loaded, setLoaded] = useState(0)
-  const [showUpload, setShowUpload] = useState(false)
-
-  const handleselectedFile = e => {
-    let files = Array.from(e.target.files)
-    // console.log("uploaded files are ", e.target.files);
-    //validate mime type
-    const reExtension = /(?:\.([^.]+))?$/
-    files.forEach(file => {
-      const ext = file.name.match(reExtension)[1].toLowerCase()
-      if (ext === "docx") {
-        return file
-      } else {
-        return files.filter(ext => allowedMimeTypes.includes(ext.type))
-      }
+export default ({ setFilePaths, filePaths, setMedia, media }) => {
+  const handleChange = e => {
+    Array.from(e.target.files).forEach(file => {
+      setMedia(media => [
+        ...media,
+        { preview: URL.createObjectURL(file), raw: file },
+      ])
     })
-    setSelectedFiles(files)
-    setLoaded(0)
-    setShowUpload(true)
   }
 
   const handleDelete = file => {
@@ -58,58 +44,64 @@ export default ({ setFilePaths, filePaths, setLocalPaths, localPaths }) => {
       })
   }
 
-  const handleUpload = () => {
-    const data = new FormData()
-    data.append("saveType", "localUpload")
-    for (var i = 0; i < selectedFiles.length; i++) {
-      let file = selectedFiles[i]
-      Object.defineProperty(file, "name", {
-        writable: true,
-        value: file.name.toLowerCase(),
-      })
-      data.append("files[" + i + "]", file)
-    }
-    axios
-      .post(
-        "http://localhost:5000/api/material/file/upload?saveType=localUpload",
-        data,
-        {
-          onUploadProgress: ProgressEvent => {
-            setLoaded((ProgressEvent.loaded / ProgressEvent.total) * 100)
-          },
-        }
-      )
-      .then(res => {
-        const paths = res.data
-        console.log("paths", paths)
-        setLocalPaths([...localPaths, ...res.data])
-        console.log("filePaths", filePaths)
-      })
-      .catch(function(err) {
-        console.log(err)
-      })
-  }
+  //**********Upload to local file storeage ************** */
 
-  const newSelectedFiles = selectedFiles.map(file => {
-    return <li key={file.name}>{file.name}</li>
-  })
+  // const handleUpload = () => {
+  //   const data = new FormData()
+  //   data.append("saveType", "localUpload")
+  //   for (var i = 0; i < selectedFiles.length; i++) {
+  //     let file = selectedFiles[i]
+  //     Object.defineProperty(file, "name", {
+  //       writable: true,
+  //       value: file.name.toLowerCase(),
+  //     })
+  //     data.append("files[" + i + "]", file)
+  //   }
+  //   axios
+  //     .post(
+  //       "http://localhost:5000/api/material/file/upload?saveType=localUpload",
+  //       data,
+  //       {
+  //         onUploadProgress: ProgressEvent => {
+  //           setLoaded((ProgressEvent.loaded / ProgressEvent.total) * 100)
+  //         },
+  //       }
+  //     )
+  //     .then(res => {
+  //       const paths = res.data
+  //       console.log("paths", paths)
+  //       setLocalPaths([...localPaths, ...res.data])
+  //       setLocalFiles([...localFiles, ...selectedFiles])
+  //       console.log("filePaths", filePaths)
+  //     })
+  //     .catch(function(err) {
+  //       console.log(err)
+  //     })
+  // }
 
-  const displayImages = (mediaURL, paths) => {
-    return paths.map(image => {
-      console.log("mediaURL + image" + mediaURL, image)
+  // const newSelectedFiles = selectedFiles.map(file => {
+  //   return <li key={file.name}>{file.name}</li>
+  // })
+
+  const displayImages = () => {
+    return media.map(image => {
       return (
-        <li key={image}>
-          <img alt={image} src={mediaURL + image} width="300px" />
+        <div key={image.raw.name + Date.now()}>
+          <img alt={image.raw.name} src={image.preview} width="300" />
           <DeleteForever
-            onClick={() => handleDelete(mediaURL + image)}
+            onClick={() => handleDelete(image.raw)}
             color="secondary"
           >
             delete_forever
           </DeleteForever>
-        </li>
+        </div>
       )
     })
   }
+
+  useEffect(() => {
+    displayImages()
+  }, [media]) // Only re-run the effect if count changes
 
   return (
     <React.Fragment>
@@ -124,7 +116,7 @@ export default ({ setFilePaths, filePaths, setLocalPaths, localPaths }) => {
         className="inputFile"
         multiple
         type="file"
-        onChange={handleselectedFile}
+        onChange={handleChange}
       />
       <label htmlFor="contained-button-file">
         <Button variant="contained" component="span">
@@ -132,42 +124,17 @@ export default ({ setFilePaths, filePaths, setLocalPaths, localPaths }) => {
         </Button>
       </label>
 
-      {displayImages("http://localhost:5000/", localPaths)}
+      {/* {displayImages("http://localhost:5000/", localPaths)}
       {displayImages(
-        "https://s3.eu-west-2.amazonaws.com/matshre-assets/",
+        "https://s3.eu-west-2.amazonaws.com/matshre-assets/uploads/",
         filePaths
-      )}
+      )} */}
 
       <br />
       <br />
-      {showUpload ? (
-        <React.Fragment>
-          <FormHelperText>Selected files</FormHelperText>
-
-          <ul>{newSelectedFiles}</ul>
-
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleUpload}
-            // className={classes.button}
-          >
-            Upload
-          </Button>
-
-          <br />
-          <br />
-          <FormHelperText>Upload progress</FormHelperText>
-          <br />
-          <LinearProgress variant="determinate" value={Math.round(loaded, 2)} />
-
-          <br />
-
-          <FormHelperText>Uploaded files</FormHelperText>
-
-          {/* {displayImages("http://localhost:5000/", localPaths)} */}
-        </React.Fragment>
-      ) : null}
+      <div className="displayImages">{displayImages()}</div>
+      <br />
+      <br />
     </React.Fragment>
   )
 }

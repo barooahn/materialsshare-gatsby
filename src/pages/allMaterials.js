@@ -1,16 +1,23 @@
-import React from "react"
+import React, { useState } from "react"
 import Fab from "@material-ui/core/Fab"
 import { graphql, Link } from "gatsby"
 import Layout from "../components/layout"
 import EditIcon from "@material-ui/icons/Edit"
 
 export default ({ data }) => {
-  const path = "https://s3.eu-west-2.amazonaws.com/matshre-assets/"
+  // const path = "https://s3.eu-west-2.amazonaws.com/matshre-assets/"
+  const [latestMaterialModifiyDate, setLatestMaterialModifiyDate] = useState(
+    new Date("2016-05-18T16:00:00Z")
+  )
   return (
     <Layout style={{ color: `teal` }}>
       <h1>All Materials</h1>
+      <h2>{latestMaterialModifiyDate.toDateString()}</h2>
 
       {data.allMongodbMaterialsshareMaterials.edges.map(material => {
+        console.log(material.node.dateModified)
+        if (latestMaterialModifiyDate < new Date(material.node.dateModified))
+          setLatestMaterialModifiyDate(new Date(material.node.dateModified))
         return (
           <div key={material.node.mongodb_id}>
             <Link to={`/material/${material.node.title}`}>
@@ -22,7 +29,7 @@ export default ({ data }) => {
               return <p>Pupil Task: {task.label}</p>
             })}
 
-            <img src={path + material.node.files} width="300px" />
+            <img src={material.node.files} width="300px" />
 
             <Link
               to="../editMaterial/"
@@ -41,28 +48,50 @@ export default ({ data }) => {
   )
 }
 
+//procedure in needs fixing -  see Graph ql for error timeInClass
 export const query = graphql`
-  {
-    allMongodbMaterialsshareMaterials {
+  query MyQuery {
+    allMongodbMaterialsshareMaterials(
+      sort: { order: DESC, fields: dateModified }
+    ) {
       edges {
         node {
-          files
-          category
-          level {
+          id
+          category {
             label
             value
           }
-          mongodb_id
-          objective
-          preparation
-          procedureIn
+          variations
+          title
+          tips
+          timePrep
+          timeInClass
+          shared
           pupilTask {
             label
             value
           }
-          shared
-          timeInClass
-          title
+          page
+          objective
+          notes
+          materials
+          mongodb_id
+          level {
+            label
+            value
+          }
+          languageFocus {
+            label
+            value
+          }
+          followUp
+          files
+          dateModified
+          book
+          activityUse {
+            label
+            value
+          }
         }
       }
     }

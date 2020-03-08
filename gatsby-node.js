@@ -1,5 +1,36 @@
 const path = require(`path`)
 
+// exports.createSchemaCustomization = ({ actions }) => {
+//   const { createTypes } = actions
+//   const typeDefs = `
+//     type mongodbMaterialsshareMaterials implements Node {
+//       timeInClass: [Int!]!
+//       shared: Boolean!
+//       activityUse: [String!]!
+//       institute: Institute!
+//       targetLanguage:TargetLanguage!
+//       languageFocus:LanguageFocus!
+//     }
+//     type ActivityUse {
+//       label: String!
+//       value: String!
+//     }
+//     type Institute {
+//       label: String!
+//       value: String!
+//     }
+//     type TargetLanguage {
+//       label: String!
+//       value: String!
+//     }
+//     type LanguageFocus {
+//       label: String!
+//       value: String!
+//     }
+//   `
+//   createTypes(typeDefs)
+// }
+
 // Implement the Gatsby API “createPages”. This is
 // called after the Gatsby bootstrap is finished so you have
 // access to any information necessary to programmatically
@@ -15,10 +46,10 @@ exports.createPages = async ({ graphql, actions }) => {
 
   const { data } = await graphql(`
     {
-        allMongodbMaterialsshareMaterials(limit: 1000) {
+      allMongodbMaterialsshareMaterials(limit: 1000) {
         edges {
           node {
-            mongodb_id,
+            mongodb_id
             title
           }
         }
@@ -47,3 +78,31 @@ exports.createPages = async ({ graphql, actions }) => {
     })
   }
 }
+
+// exports.sourceNodes = ({ actions }) => {
+//   const { createTypes } = actions
+//   const typeDefs = `
+//     # One must say that the type is a Node
+//     type activityUse implements Node {
+//       # However Node fields are optional and you don't have to add them
+//       label: String,
+// 			value: String
+//     }
+//     type institute implements Node {
+//       # However Node fields are optional and you don't have to add them
+//       label: String,
+// 			value: String
+//     }
+//     type targetLanguage implements Node {
+//       # However Node fields are optional and you don't have to add them
+//       label: String,
+// 			value: String
+//     }
+//     type languageFocus implements Node {
+//       # However Node fields are optional and you don't have to add them
+//       label: String,
+// 			value: String
+//     }
+//   `
+//   createTypes(typeDefs)
+// }
