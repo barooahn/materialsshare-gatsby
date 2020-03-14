@@ -20,7 +20,7 @@ function MaterialDetailsFull({
   procBefore,
   setProcBefore,
   procIn,
-  setProcin,
+  setProcIn,
   book,
   setBook,
   page,
@@ -50,7 +50,7 @@ function MaterialDetailsFull({
   }
 
   const changeProcIn = e => {
-    setProcin(e.target.value)
+    setProcIn(e.target.value)
   }
 
   const changeBook = e => {

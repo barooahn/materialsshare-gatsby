@@ -123,16 +123,29 @@ export default ({ setFilePaths, filePaths, setMedia, media }) => {
           Select File(s)
         </Button>
       </label>
-
       {/* {displayImages("http://localhost:5000/", localPaths)}
       {displayImages(
         "https://s3.eu-west-2.amazonaws.com/matshre-assets/uploads/",
         filePaths
       )} */}
-
       <br />
       <br />
       <div className="displayImages">{displayImages()}</div>
+      {filePaths
+        ? filePaths.map(file => {
+            return (
+              <div key={file}>
+                <img src={file} key={file} width="300"></img>
+                <DeleteForever
+                  onClick={() => handleDelete(file)}
+                  color="secondary"
+                >
+                  delete_forever
+                </DeleteForever>
+              </div>
+            )
+          })
+        : null}
       <br />
       <br />
     </React.Fragment>

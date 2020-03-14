@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
 import { useStaticQuery, graphql } from "gatsby"
 import { makeStyles } from "@material-ui/core/styles"
 import Stepper from "@material-ui/core/Stepper"
@@ -63,14 +63,43 @@ const MaterialStepper = ({ type = "Add", material = {} }) => {
   const [share, setShare] = React.useState(true)
   const [media, setMedia] = React.useState([])
 
+  // console.log("Material from ", resultData)
+  // useEffect(() => {
+  //   fetch(`http://localhost:5000/api/material/${material.mongodb_id}`, {
+  //     method: "GET",
+  //   })
+  //     .then(response => response.json())
+
+  //     .then(resultData => {
+  //       console.log("live data", resultData)
+  //       setTitle(resultData.title)
+  //       setObjective(resultData.objective)
+  //       setTimePrep(resultData.timePrep)
+  //       setTimeClass(resultData.timeClass)
+  //       setProcBefore(resultData.procBefore)
+  //       setProcIn(resultData.procIn)
+  //       setBook(resultData.book)
+  //       setPage(resultData.book)
+  //       setFollowUp(resultData.followUp)
+  //       setVariations(resultData.variations)
+  //       setMaterials(resultData.materials)
+  //       setTips(resultData.tips)
+  //       setNotes(resultData.notes)
+  //       setActivityUseValue(resultData.activityUse)
+  //       setLanguageFocusValue(resultData.languageFocus)
+  //       setTargetLanguage(resultData.targetLanguage)
+  //       setShare(resultData.share)
+  //     })
+  // }, [])
+
   const query = useStaticQuery(graphql`
     {
       allMongodbMaterialsshareMaterials {
         edges {
           node {
             level {
-              value
               label
+              value
             }
             pupilTask {
               label
@@ -135,7 +164,6 @@ const MaterialStepper = ({ type = "Add", material = {} }) => {
           })
       })
     })
-    console.log("resultArray: ", resultArray)
     return resultArray.sort(compareValues("label"))
   }
 
@@ -180,58 +208,50 @@ const MaterialStepper = ({ type = "Add", material = {} }) => {
     })
   }
 
-  const changeLevel = (e, value) => {
-    console.log("change level", value)
+  const convertValue = value => {
+    return value
+      .replace(/\W/gi, "")
+      .trim()
+      .toLowerCase()
+  }
+
+  const optionChange = value => {
     //Check if value passed is object with title i.e. from db or a new item
     if (value && !value[value.length - 1].hasOwnProperty("label")) {
       const lastValue = value.pop(value[value.length])
-      const lastValueItem = { label: lastValue, value: 2011 }
+      const sanatisedValue = convertValue(lastValue)
+      const lastValueItem = {
+        label: lastValue,
+        value: convertValue(sanatisedValue),
+      }
       value.push(lastValueItem)
     }
+    return value
+  }
+
+  const changeLevel = (e, value) => {
+    optionChange(value)
+    console.log("level value ", value)
     setLevelValue(value)
   }
 
   const changePupilTask = (e, value) => {
-    console.log("change pupil level", value)
-    //Check if value passed is object with title i.e. from db or a new item
-    if (value && !value[value.length - 1].hasOwnProperty("label")) {
-      const lastValue = value.pop(value[value.length])
-      const lastValueItem = { label: lastValue, value: 2011 }
-      value.push(lastValueItem)
-    }
+    optionChange(value)
     setPupilTaskValue(value)
   }
 
   const changeCategory = (e, value) => {
-    console.log("change category level", value)
-    //Check if value passed is object with title i.e. from db or a new item
-    if (value && !value[value.length - 1].hasOwnProperty("label")) {
-      const lastValue = value.pop(value[value.length])
-      const lastValueItem = { label: lastValue, value: 2011 }
-      value.push(lastValueItem)
-    }
+    optionChange(value)
     setCategoryValue(value)
   }
 
   const changeLanguageFocus = (e, value) => {
-    console.log("change Language focus", value)
-    //Check if value passed is object with title i.e. from db or a new item
-    if (value && !value[value.length - 1].hasOwnProperty("label")) {
-      const lastValue = value.pop(value[value.length])
-      const lastValueItem = { title: lastValue, value: 2011 }
-      value.push(lastValueItem)
-    }
+    optionChange(value)
     setLanguageFocusValue(value)
   }
 
   const changeActivityUse = (e, value) => {
-    console.log("change Activity use", value)
-    //Check if value passed is object with title i.e. from db or a new item
-    if (value && !value[value.length - 1].hasOwnProperty("label")) {
-      const lastValue = value.pop(value[value.length])
-      const lastValueItem = { title: lastValue, value: 2011 }
-      value.push(lastValueItem)
-    }
+    optionChange(value)
     setActivityUseValue(value)
   }
 
@@ -293,9 +313,11 @@ const MaterialStepper = ({ type = "Add", material = {} }) => {
             notes={notes}
             setNotes={setNotes}
             category={dynamicCategory}
+            categoryValue={categoryValue}
             setCategoryValue={changeCategory}
             languageFocus={dynamicLanguageFocus}
             languageFocusValue={languageFocusValue}
+            setLanguageFocusValue={setLanguageFocusValue}
             setLanguageFocusValue={changeLanguageFocus}
             activityUse={dynamicActivityUse}
             activityUseValue={activityUseValue}
