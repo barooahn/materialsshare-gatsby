@@ -20,7 +20,7 @@ function MaterialDetailsFull({
   procBefore,
   setProcBefore,
   procIn,
-  setProcin,
+  setProcIn,
   book,
   setBook,
   page,
@@ -35,30 +35,30 @@ function MaterialDetailsFull({
   setTips,
   notes,
   setNotes,
-  institute,
-  instituteValue,
-  setInstituteValue,
   languageFocus,
   languageFocusValue,
   setLanguageFocusValue,
   activityUse,
   activityUseValue,
   setActivityUseValue,
+  category,
+  categoryValue,
+  setCategoryValue,
 }) {
   const changeProcBefore = e => {
     setProcBefore(e.target.value)
   }
 
   const changeProcIn = e => {
-    setProcin(e.target.value)
+    setProcIn(e.target.value)
   }
 
   const changeBook = e => {
     setBook(e.target.value)
   }
 
-  const changePage = (e, newValue) => {
-    setPage(newValue)
+  const changePage = e => {
+    setPage(e.target.value)
   }
 
   const changeFollowUp = (e, newValue) => {
@@ -152,6 +152,7 @@ function MaterialDetailsFull({
         if (input.type === "text") {
           return (
             <TextField
+              key={input.label}
               label={input.label}
               value={input.value}
               onChange={input.onChange}
@@ -165,13 +166,14 @@ function MaterialDetailsFull({
 
       <Autocomplete
         className={classes.autoComplete}
-        id="combo-box-demo"
+        id="category"
         multiple
-        value={instituteValue}
-        onChange={setInstituteValue}
-        options={institute}
+        value={categoryValue}
+        onChange={setCategoryValue}
+        options={category}
         freeSolo={true}
-        getOptionLabel={option => option.title}
+        getOptionLabel={option => option.label}
+        style={{ width: 600 }}
         renderInput={params => (
           <TextField
             {...params}
@@ -183,13 +185,14 @@ function MaterialDetailsFull({
       />
       <Autocomplete
         className={classes.autoComplete}
-        id="combo-box-demo"
+        id="language-focus"
         multiple
         value={languageFocusValue}
         onChange={setLanguageFocusValue}
         options={languageFocus}
         freeSolo={true}
-        getOptionLabel={option => option.title}
+        getOptionLabel={option => option.label}
+        style={{ width: 600 }}
         renderInput={params => (
           <TextField
             {...params}
@@ -201,13 +204,14 @@ function MaterialDetailsFull({
       />
       <Autocomplete
         className={classes.autoComplete}
-        id="combo-box-demo"
+        id="activity-use"
         multiple
         value={activityUseValue}
         onChange={setActivityUseValue}
         options={activityUse}
         freeSolo={true}
-        getOptionLabel={option => option.title}
+        getOptionLabel={option => option.label}
+        style={{ width: 600 }}
         renderInput={params => (
           <TextField
             {...params}

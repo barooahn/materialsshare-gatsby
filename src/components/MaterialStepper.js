@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
 import { useStaticQuery, graphql } from "gatsby"
 import { makeStyles } from "@material-ui/core/styles"
 import Stepper from "@material-ui/core/Stepper"
@@ -6,7 +6,7 @@ import Step from "@material-ui/core/Step"
 import StepLabel from "@material-ui/core/StepLabel"
 import Button from "@material-ui/core/Button"
 import Typography from "@material-ui/core/Typography"
-import MediaFiles from "./media-files"
+import MediaFiles from "./MediaFiles"
 import MaterialDetails from "./MaterialDetails"
 import { saveData } from "../actions/materials-share-actions"
 import MaterialDetailsFull from "./MaterialDetailsFull"
@@ -28,52 +28,69 @@ function getSteps() {
   return ["Add Media and Title", "Add details", "Complete material"]
 }
 
-const institute = [
-  { title: "The Shawshank Redemption institute", year: 1994 },
-  { title: "The Godfather institute", year: 1972 },
-  { title: "The Godfather: Part II institute", year: 1974 },
-  { title: "The Dark Knight institute", year: 2008 },
-]
-const languageFocus = [
-  { title: "The Shawshank Redemption languageFocus", year: 1994 },
-  { title: "The Godfather languageFocus", year: 1972 },
-  { title: "The Godfather: Part II languageFocus", year: 1974 },
-  { title: "The Dark Knight languageFocus", year: 2008 },
-]
-const activityUse = [
-  { title: "The Shawshank Redemption activityUse", year: 1994 },
-  { title: "The Godfather activityUse", year: 1972 },
-  { title: "The Godfather: Part II activityUse", year: 1974 },
-  { title: "The Dark Knight activityUse", year: 2008 },
-]
-
-const MaterialStepper = ({
-  type = "Add",
-  editTitle = "",
-  editLevelValue = [],
-  editObjective = "",
-  editPupilTask = [],
-}) => {
+const MaterialStepper = ({ type = "Add", material = {} }) => {
   //detail values
-  const [title, setTitle] = React.useState(editTitle)
-  const [levelValue, setLevelValue] = React.useState(editLevelValue)
-  const [pupilTaskValue, setPupilTaskValue] = React.useState(editPupilTask)
-  const [objective, setObjective] = React.useState(editObjective)
+  const [filePaths, setFilePaths] = React.useState(material.files || [])
+  const [title, setTitle] = React.useState(material.title || "")
+  const [levelValue, setLevelValue] = React.useState(material.levelValue || [])
+  const [categoryValue, setCategoryValue] = React.useState(
+    material.categoryValue || []
+  )
+  const [pupilTaskValue, setPupilTaskValue] = React.useState(
+    material.pupilTask || []
+  )
+  const [objective, setObjective] = React.useState(material.objective || "")
   const [timePrep, setTimePrep] = React.useState([20, 40])
   const [timeClass, setTimeClass] = React.useState([20, 40])
-  const [procBefore, setProcBefore] = React.useState("")
-  const [procIn, setProcIn] = React.useState("")
-  const [book, setBook] = React.useState("")
-  const [page, setPage] = React.useState("")
-  const [followUp, setFollowUp] = React.useState("")
-  const [variations, setVariations] = React.useState("")
-  const [materials, setMaterials] = React.useState("")
-  const [tips, setTips] = React.useState("")
-  const [notes, setNotes] = React.useState("")
-  const [instituteValue, setInstituteValue] = React.useState([])
-  const [activityUseValue, setActivityUseValue] = React.useState([])
-  const [languageFocusValue, setLanguageFocusValue] = React.useState([])
+  const [procBefore, setProcBefore] = React.useState(material.procBefore || "")
+  const [procIn, setProcIn] = React.useState(material.procIn || "")
+  const [book, setBook] = React.useState(material.book || "")
+  const [page, setPage] = React.useState(material.page || "")
+  const [followUp, setFollowUp] = React.useState(material.followUp || "")
+  const [variations, setVariations] = React.useState(material.variations || "")
+  const [materials, setMaterials] = React.useState(material.materials || "")
+  const [tips, setTips] = React.useState(material.tips || "")
+  const [notes, setNotes] = React.useState(material.notes || "")
+  const [activityUseValue, setActivityUseValue] = React.useState(
+    material.activityUseValue || []
+  )
+  const [languageFocusValue, setLanguageFocusValue] = React.useState(
+    material.languageFocusValue || []
+  )
+  const [targetLanguage, setTargetLanguage] = React.useState(
+    material.targetLanguage || ""
+  )
   const [share, setShare] = React.useState(true)
+  const [media, setMedia] = React.useState([])
+
+  // console.log("Material from ", resultData)
+  // useEffect(() => {
+  //   fetch(`http://localhost:5000/api/material/${material.mongodb_id}`, {
+  //     method: "GET",
+  //   })
+  //     .then(response => response.json())
+
+  //     .then(resultData => {
+  //       console.log("live data", resultData)
+  //       setTitle(resultData.title)
+  //       setObjective(resultData.objective)
+  //       setTimePrep(resultData.timePrep)
+  //       setTimeClass(resultData.timeClass)
+  //       setProcBefore(resultData.procBefore)
+  //       setProcIn(resultData.procIn)
+  //       setBook(resultData.book)
+  //       setPage(resultData.book)
+  //       setFollowUp(resultData.followUp)
+  //       setVariations(resultData.variations)
+  //       setMaterials(resultData.materials)
+  //       setTips(resultData.tips)
+  //       setNotes(resultData.notes)
+  //       setActivityUseValue(resultData.activityUse)
+  //       setLanguageFocusValue(resultData.languageFocus)
+  //       setTargetLanguage(resultData.targetLanguage)
+  //       setShare(resultData.share)
+  //     })
+  // }, [])
 
   const query = useStaticQuery(graphql`
     {
@@ -81,13 +98,26 @@ const MaterialStepper = ({
         edges {
           node {
             level {
-              value
               label
+              value
             }
             pupilTask {
               label
               value
             }
+            activityUse {
+              label
+              value
+            }
+            languageFocus {
+              label
+              value
+            }
+            category {
+              label
+              value
+            }
+            files
           }
         }
       }
@@ -125,8 +155,8 @@ const MaterialStepper = ({
 
   const getDynamicOptions = nameOfDBColumn => {
     let resultArray = []
-    query.allMongodbMaterialsshareMaterials.edges.map(node => {
-      node.node[nameOfDBColumn].map(item => {
+    query.allMongodbMaterialsshareMaterials.edges.forEach(node => {
+      node.node[nameOfDBColumn].forEach(item => {
         if (!IsInObject(item.value, resultArray))
           resultArray.push({
             label: item.label,
@@ -138,7 +168,10 @@ const MaterialStepper = ({
   }
 
   let dynamicLevels = getDynamicOptions("level")
+  let dynamicLanguageFocus = getDynamicOptions("languageFocus")
+  let dynamicActivityUse = getDynamicOptions("activityUse")
   let dynamicPupilTask = getDynamicOptions("pupilTask")
+  let dynamicCategory = getDynamicOptions("category")
 
   const classes = useStyles()
   const [activeStep, setActiveStep] = React.useState(0)
@@ -146,88 +179,94 @@ const MaterialStepper = ({
   const steps = getSteps()
 
   const save = () => {
+    //add ,  clap, comments, category
     saveData({
       title,
-      objective,
-      levelValue,
-      pupilTaskValue,
-      timePrep,
-      timeClass,
-      procBefore,
-      procIn,
+      timeInClass: timeClass,
+      timpPrep: timePrep,
+      procedureBefore: procBefore,
+      procedureIn: procIn,
       book,
       page,
       followUp,
       variations,
-      materials,
       tips,
       notes,
-      instituteValue,
-      languageFocusValue,
-      activityUseValue,
-      share,
+      files: filePaths,
+      objective,
+      level: levelValue,
+      languageFocus: languageFocusValue,
+      activityUse: activityUseValue,
+      pupilTask: pupilTaskValue,
+      category: categoryValue,
+      targetLanguage,
+      materials,
+      shared: share,
+      _id: material.mongodb_id,
+      dateModified: Date.now(),
+      localFiles: media,
     })
   }
 
-  const changeLevel = (e, value) => {
-    console.log("change level", value)
+  const convertValue = value => {
+    return value
+      .replace(/\W/gi, "")
+      .trim()
+      .toLowerCase()
+  }
+
+  const optionChange = value => {
     //Check if value passed is object with title i.e. from db or a new item
     if (value && !value[value.length - 1].hasOwnProperty("label")) {
       const lastValue = value.pop(value[value.length])
-      const lastValueItem = { label: lastValue, year: 2011 }
+      const sanatisedValue = convertValue(lastValue)
+      const lastValueItem = {
+        label: lastValue,
+        value: convertValue(sanatisedValue),
+      }
       value.push(lastValueItem)
     }
+    return value
+  }
+
+  const changeLevel = (e, value) => {
+    optionChange(value)
+    console.log("level value ", value)
     setLevelValue(value)
   }
 
   const changePupilTask = (e, value) => {
-    console.log("change pupil level", value)
-    //Check if value passed is object with title i.e. from db or a new item
-    if (value && !value[value.length - 1].hasOwnProperty("label")) {
-      const lastValue = value.pop(value[value.length])
-      const lastValueItem = { label: lastValue, year: 2011 }
-      value.push(lastValueItem)
-    }
+    optionChange(value)
     setPupilTaskValue(value)
   }
 
-  const changeInstitute = (e, value) => {
-    console.log("change Institute", value)
-    //Check if value passed is object with title i.e. from db or a new item
-    if (value && !value[value.length - 1].hasOwnProperty("title")) {
-      const lastValue = value.pop(value[value.length])
-      const lastValueItem = { title: lastValue, year: 2011 }
-      value.push(lastValueItem)
-    }
-    setInstituteValue(value)
+  const changeCategory = (e, value) => {
+    optionChange(value)
+    setCategoryValue(value)
   }
 
   const changeLanguageFocus = (e, value) => {
-    console.log("change Language focus", value)
-    //Check if value passed is object with title i.e. from db or a new item
-    if (value && !value[value.length - 1].hasOwnProperty("title")) {
-      const lastValue = value.pop(value[value.length])
-      const lastValueItem = { title: lastValue, year: 2011 }
-      value.push(lastValueItem)
-    }
+    optionChange(value)
     setLanguageFocusValue(value)
   }
 
   const changeActivityUse = (e, value) => {
-    console.log("change Activity use", value)
-    //Check if value passed is object with title i.e. from db or a new item
-    if (value && !value[value.length - 1].hasOwnProperty("title")) {
-      const lastValue = value.pop(value[value.length])
-      const lastValueItem = { title: lastValue, year: 2011 }
-      value.push(lastValueItem)
-    }
+    optionChange(value)
     setActivityUseValue(value)
   }
 
   function getStepContent(step) {
     switch (step) {
       case 0:
-        return <MediaFiles />
+        return (
+          <MediaFiles
+            filePaths={filePaths}
+            setFilePaths={setFilePaths}
+            type={type}
+            media={media}
+            setMedia={setMedia}
+          />
+        )
       case 1:
         return (
           <MaterialDetails
@@ -238,6 +277,8 @@ const MaterialStepper = ({
             levels={dynamicLevels}
             objective={objective}
             setObjective={setObjective}
+            targetLanguage={targetLanguage}
+            setTargetLanguage={setTargetLanguage}
             timePrep={timePrep}
             setTimePrep={setTimePrep}
             timeClass={timeClass}
@@ -257,7 +298,8 @@ const MaterialStepper = ({
             setProcIn={setProcIn}
             book={book}
             setBook={setBook}
-            page={setPage}
+            page={page}
+            setPage={setPage}
             followUp={followUp}
             setFollowUp={setFollowUp}
             varitations={variations}
@@ -270,15 +312,18 @@ const MaterialStepper = ({
             setTips={setTips}
             notes={notes}
             setNotes={setNotes}
-            institute={institute}
-            instituteValue={instituteValue}
-            setInstituteValue={changeInstitute}
-            languageFocus={languageFocus}
+            category={dynamicCategory}
+            categoryValue={categoryValue}
+            setCategoryValue={changeCategory}
+            languageFocus={dynamicLanguageFocus}
             languageFocusValue={languageFocusValue}
+            setLanguageFocusValue={setLanguageFocusValue}
             setLanguageFocusValue={changeLanguageFocus}
-            activityUse={activityUse}
+            activityUse={dynamicActivityUse}
             activityUseValue={activityUseValue}
             setActivityUseValue={changeActivityUse}
+            targetLanguage={targetLanguage}
+            setTargetLanguage={setTargetLanguage}
             type={type}
           />
         )

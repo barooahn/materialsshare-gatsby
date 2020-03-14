@@ -1,6 +1,6 @@
 import React from "react"
 import { graphql } from "gatsby"
-import Layout from '../components/layout'
+import Layout from "../components/layout"
 
 class Material extends React.Component {
   render() {
@@ -13,14 +13,13 @@ class Material extends React.Component {
           <a href={material.title} className="itemlink">
             {material.title}
           </a>
- 
-            <div
-              dangerouslySetInnerHTML={{
-                __html: material.objective,
-              }}
-              className="story"
-            />
-        
+
+          <div
+            dangerouslySetInnerHTML={{
+              __html: material.objective,
+            }}
+            className="story"
+          />
         </div>
       </Layout>
     )
@@ -30,23 +29,24 @@ class Material extends React.Component {
 export default Material
 
 export const pageQuery = graphql`
-        query($id: String!) {
+  query($id: String!) {
     mongodbMaterialsshareMaterials(mongodb_id: { eq: $id }) {
-        mongodb_id
-        level {
-          label
-          value
-        }
-        category
-        files
-        objective
-        pupilTask {
-          label
-          value
-        }
-        title
+      mongodb_id
+      level {
+        label
+        value
+      }
+      category {
+        label
+        value
+      }
+      files
+      objective
+      pupilTask {
+        label
+        value
+      }
+      title
     }
-}
-  
-  
+  }
 `
